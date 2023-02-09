@@ -1,20 +1,27 @@
-import Player from "@vimeo/player";
+import Player from '@vimeo/player';
+import throttle  from 'lodash.throttle';
 
 
-const iframe = document.querySelector('iframe');
-const player = new Player(iframe);
+const vimeoPlayer = document.querySelector('#vimeo-player');
+const player = new Player(vimeoPlayer);
+const KEY_STORAGE_DATA_TIME = 'videoplayer-current-time'; 
 
-player.on('timeupdate', function(data) {
-    console.log('data', data);
-});
+player.on('timeupdate', throttle(saveDataStorage, 1000));
+player.setCurrentTime(returnSecondsStorage());
 
 
+function saveDataStorage(data) {
+    const dataTime = JSON.stringify(data);
+    localStorage.setItem(KEY_STORAGE_DATA_TIME, dataTime);
+};
 
-// Зберігай час відтворення у локальне сховище.Нехай ключем для сховища 
-// буде рядок "videoplayer-current-time".
+function returnSecondsStorage() {
+    const dataTimeStorage = localStorage.getItem(KEY_STORAGE_DATA_TIME);
+    let secondsStorage = 0;
 
-// Під час перезавантаження сторінки скористайся методом setCurrentTime() з 
-// метою відновлення відтворення зі збереженої позиції.
+    if (dataTimeStorage !== null) {
+        secondsStorage =  +JSON.parse(dataTimeStorage).seconds;
+    };
 
-// Додай до проекту бібліотеку lodash.throttle і зроби так, щоб час 
-// відтворення оновлювався у сховищі не частіше, ніж раз на секунду.
+    return secondsStorage;    
+};
