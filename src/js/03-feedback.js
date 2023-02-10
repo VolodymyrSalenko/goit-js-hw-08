@@ -5,7 +5,7 @@ const form = document.querySelector('.feedback-form');
 const email = document.querySelector('[name="email"]');
 const message = document.querySelector('[name="message"]');
 const KEY_STORAGE_FORM = 'feedback-form-state';
-dataForm = {};
+const dataForm = {};
 
 
 getDataFormStorage();
