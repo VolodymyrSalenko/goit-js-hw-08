@@ -1,29 +1,42 @@
 
 import throttle from 'lodash.throttle';
 
-const email = document.querySelector('name[email]');
-console.log("email", email);
-
-const message = document.querySelector('name[message]');
-console.log("message", message);
-
-const btnSubmit = document.querySelector('type[submit]');
-console.log("btnSubmit", btnSubmit);
+const form = document.querySelector('.feedback-form');
+const email = document.querySelector('[name="email"]');
+const message = document.querySelector('[name="message"]');
+const KEY_STORAGE_FORM = 'feedback-form-state';
+dataForm = {};
 
 
+getDataFormStorage();
+form.addEventListener('input', throttle(loadDataFormStorage, 500));
+form.addEventListener('submit', cleanDataFormStorage);
 
 
+function loadDataFormStorage(event) {
+    dataForm[event.target.name] = event.target.value;
+    const stringData = JSON.stringify(dataForm);
 
-// Відстежуй на формі подію input, і щоразу записуй у локальне сховище 
-// об'єкт з полями email і message, у яких зберігай поточні значення полів форми. 
+    localStorage.setItem(KEY_STORAGE_FORM, stringData);
+};
 
-// Нехай ключем для сховища буде рядок "feedback-form-state".
+function cleanDataFormStorage(event) {
+    event.preventDefault();
+    
+    event.currentTarget.reset();
+    localStorage.removeItem(KEY_STORAGE_FORM);
 
-// Під час завантаження сторінки перевіряй стан сховища, і якщо там є збережені
-// дані, заповнюй ними поля форми.В іншому випадку поля повинні бути порожніми.
+    console.log(dataForm);
+};
 
-// Під час сабміту форми очищуй сховище і поля форми, а також виводь у консоль 
-// об'єкт з полями email, message та їхніми поточними значеннями.
+function getDataFormStorage() {
+    const data = JSON.parse(localStorage.getItem(KEY_STORAGE_FORM));
 
-// Зроби так, щоб сховище оновлювалось не частіше, ніж раз на 500 мілісекунд.
-// Для цього додай до проекту і використовуй бібліотеку lodash.throttle.
+    if (data) {
+        email.value = data.email || '';
+        dataForm.email = data.email || '';
+
+        message.value = data.message || '';
+        dataForm.message = data.message || '';
+    };
+};
